@@ -71,7 +71,7 @@ data "aws_iam_policy_document" "gitops_access" {
     ]
     effect = "Allow"
     resources = [
-      "arn:aws:codecommit:${data.aws_region.current.id}:${var.codecommit_region}:*"
+      "*"
     ]
   }
 }

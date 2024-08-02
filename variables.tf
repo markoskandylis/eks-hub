@@ -66,5 +66,5 @@ variable "gitops_addons_basepath" {
 variable "gitops_addons_path" {
   description = "Git repository path for addons"
   type        = string
-  default     = "bootstrap/addons"
+  default     = "bootstrap"
 }
