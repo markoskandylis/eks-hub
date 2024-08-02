@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: cluster-manifests
+  namespace: argocd
+spec:
+  syncPolicy:
+    preserveResourcesOnDeletion: true
+  generators:
+  - clusters:
+      selector:
+        matchLabels:
+          tenant: control-plane
+  template:
+    metadata:
+      name: cluster-manifests
+    spec:
+      project: default
+      source:
+        repoURL: '{{metadata.annotations.manifests_repo_url}}'
+        path: '{{metadata.annotations.manifests_repo_basepath}}{{metadata.annotations.manifests_repo_path}}'
+        targetRevision: '{{metadata.annotations.manifests_repo_revision}}'
+        directory:
+          recurse: true
+          exclude: exclude/*
+      destination:
+        namespace: 'argocd'
+        name: '{{name}}'
+      syncPolicy:
+        automated: {}
