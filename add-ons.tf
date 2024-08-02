@@ -9,12 +9,10 @@ module "eks_blueprints_addons" {
 
   # Using GitOps Bridge
   create_kubernetes_resources = false
-  # external_secrets_kms_key_arns = ["arn:aws:kms:${var.region}:${data.aws_caller_identity.current.account_id}:key/*"]
-  # external_secrets_secrets_manager_arns =  ["arn:aws:secretsmanager:${var.region}:${data.aws_caller_identity.current.account_id}:secret:${local.name}/*"]
-  # external_secrets_ssm_parameter_arns = ["arn:aws:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter/${local.name}/*"]
   external_secrets = {
     create_role = false
   }
+
   # EKS Blueprints Addons
   enable_cert_manager                 = local.aws_addons.enable_cert_manager
   enable_aws_efs_csi_driver           = local.aws_addons.enable_aws_efs_csi_driver

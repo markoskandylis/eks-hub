@@ -36,14 +36,6 @@ data "aws_iam_policy_document" "irsa_policy" {
       "sts:AssumeRole"
     ]
   }
-
-  statement {
-    effect = "Allow"
-    actions = [
-      "ecr:*"
-    ]
-    resources = ["*"]
-  }
 }
 
 resource "kubernetes_namespace" "argocd" {
@@ -55,7 +47,7 @@ resource "kubernetes_namespace" "argocd" {
 
 //user for argocd credentials
 resource "aws_iam_user" "codecommit_user" {
-  name = "${local.name}-gitops"
+  name = "${local.name}-gitops-bridge"
   path = "/"
 }
 
@@ -79,13 +71,13 @@ data "aws_iam_policy_document" "gitops_access" {
     ]
     effect = "Allow"
     resources = [
-      "arn:aws:codecommit:${data.aws_region.current.id}:${var.codecommit_region}:app-tooling-gitops-eks-addons"
+      "arn:aws:codecommit:${data.aws_region.current.id}:${var.codecommit_region}:*"
     ]
   }
 }
 
 resource "aws_iam_policy" "gitops_access" {
-  name   = "${local.name}-gitops"
+  name   = "${local.name}-gitops-bridge"
   path   = "/"
   policy = data.aws_iam_policy_document.gitops_access.json
 }
@@ -138,9 +130,8 @@ resource "kubernetes_secret" "git_secrets" {
 # GitOps Bridge: Bootstrap
 ################################################################################
 module "gitops_bridge_bootstrap" {
-  source  = "gitops-bridge-dev/gitops-bridge/helm"
-  version = "0.0.2"
-
+  source = "gitops-bridge-dev/gitops-bridge/helm"
+  version = "0.1.0"
   cluster = {
     cluster_name = module.eks.cluster_name
     environment  = local.environment
@@ -149,21 +140,15 @@ module "gitops_bridge_bootstrap" {
   }
 
   apps = local.argocd_apps
-
   argocd = {
     namespace        = local.argocd_namespace
+    chart_version    = "7.3.11"
+    timeout          = 600
     create_namespace = false
-    # chart            = "app-tooling-argocd-chart"
-    chart_version = "7.0.0"
-    # repository       = "oci://${data.aws_caller_identity.current.account_id}.dkr.ecr.${data.aws_region.current.id}.amazonaws.com"
     set = [
       {
         name  = "server.service.type"
         value = "LoadBalancer"
-      },
-      {
-        name  = "server.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-internal"
-        value = "true"
       }
     ]
   }

@@ -10,7 +10,7 @@ spec:
   - clusters:
       selector:
         matchLabels:
-          tenant: control-plane
+          environment: control-plane
   template:
     metadata:
       name: 'cluster-addons'

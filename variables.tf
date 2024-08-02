@@ -1,3 +1,9 @@
+variable "vpc_cidr" {
+  description = "VPC CIDR"
+  type        = string
+  default     = "10.0.0.0/16"
+}
+
 variable "region" {
   description = "AWS region"
   type        = string
@@ -29,11 +35,6 @@ variable "addons" {
     enable_aws_argocd                   = true
     enable_external_secrets             = true
     enable_metrics_server               = true
-    enable_aws_efs_csi_driver           = false
-    enable_aws_ebs_csi_resources        = true
-    enable_cert_manager                 = true
-    enable_ack_acm                      = false
-    enable_ack_route53                  = false
     enable_aws_cloudwatch_metrics       = true
   }
 }
@@ -46,18 +47,11 @@ variable "manifests" {
   }
 }
 
-
-variable "codecommit_region" {
-  default = "eu-west-2"
-}
 # Addons Git
-variable "addons_repo_name" {
-  default = "eks-addons"
-}
 variable "gitops_addons_repo" {
   description = "Git repository contains for addons"
   type        = string
-  default     = "v1/repos/app-tooling-gitops-eks-addons"
+  default     = "v1/repos/gitops-bridge-addons"
 }
 variable "gitops_addons_revision" {
   description = "Git repository revision/branch/ref for addons"
@@ -72,30 +66,5 @@ variable "gitops_addons_basepath" {
 variable "gitops_addons_path" {
   description = "Git repository path for addons"
   type        = string
-  default     = "bootstrap/control-plane/addons"
-}
-
-//manifests configuration
-variable "manifests_repo_name" {
-  default = "eks-addons"
-}
-variable "gitops_manifests_repo" {
-  description = "Git repository contains for addons"
-  type        = string
-  default     = "v1/repos/app-tooling-gitops-eks-addons"
-}
-variable "gitops_manifests_revision" {
-  description = "Git repository revision/branch/ref for addons"
-  type        = string
-  default     = "HEAD"
-}
-variable "gitops_manifests_basepath" {
-  description = "Git repository base path for addons"
-  type        = string
-  default     = ""
-}
-variable "gitops_manifests_path" {
-  description = "Git repository path for addons"
-  type        = string
-  default     = "bootstrap/control-plane/manifests"
+  default     = "bootstrap/addons"
 }
